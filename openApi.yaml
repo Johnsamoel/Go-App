@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: Go Wallet
+  version: 1.0.0
+  description: |
+    # 🚀 Get started here
+
+    This template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.
+
+    ## 🔖 **How to use this template**
+
+    #### **Step 1: Send requests**
+
+    RESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.
+
+    This collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click "Send" to see what happens.
+
+    #### **Step 2: View responses**
+
+    Observe the response tab for status code (200 OK), response time, and size.
+
+    #### **Step 3: Send new Body data**
+
+    Update or add new data in "Body" in the POST request. Typically, Body data is also used in PUT request.
+
+    ```
+    {
+        "name": "Add your name in the body"
+    }
+    ```
+
+    #### **Step 4: Update the variable**
+
+    Variables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.
+
+    #### **Step 5: Add tests in the "Tests" tab**
+
+    Tests help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the "Test Results" tab.
+
+    <img src="https://content.pstmn.io/b5f280a7-4b09-48ec-857f-0a7ed99d7ef8/U2NyZWVuc2hvdCAyMDIzLTAzLTI3IGF0IDkuNDcuMjggUE0ucG5n">
+
+    ## 💪 Pro tips
+
+    - Use folders to group related requests and organize the collection.
+    - Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) in "Tests" to verify if the API works as expected and execute workflows.
+
+    ## 💡Related templates
+
+    [API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  
+    [API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  
+    [Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/user/{id}:
+    get:
+      summary: Get user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: Delete user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to delete.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /api/auth/register:
+    post:
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+  /api/auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Email:
+                  type: string
+                Password:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+  /api/auth/logout:
+    post:
+      summary: Logout
+      responses:
+        '200':
+          description: Successful operation
+  /api/user/delete/{id}:
+    delete:
+      summary: Delete user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to delete.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /api/user/update/{id}:
+    patch:
+      summary: Update user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the user to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Name:
+                  type: string
+                PhoneNumber:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+  /api/wallet/activate:
+    post:
+      summary: Activate wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Otp:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+  /api/wallet/refund:
+    post:
+      summary: Refund wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+      responses:
+        '200':
+          description: Successful operation
+  /api/wallet/withdraw:
+    post:
+      summary: Withdraw wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+      responses:
+        '200':
+          description: Successful operation
