@@ -4,15 +4,31 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
+	"os"
 )
 
 var (
 	DB *sql.DB
 )
 
+
+
 func OpenDbConnection() (*sql.DB, error) {
+
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		return nil, fmt.Errorf("Couldn't load env variables: %v", err)
+	}
+
+	var DB_UserName = os.Getenv("DB_UserName")
+	var DB_PASSWORD = os.Getenv("DB_password")
+	var DB_Host = os.Getenv("DB_Host")
+	var DB_NAME = os.Getenv("DB_Name")
+
 	// Open a connection to the MySQL database
-	database, err := sql.Open("mysql", "root:5256@tcp(localhost:3306)/gowallet?parseTime=true")
+	database, err := sql.Open("mysql", DB_UserName+":"+DB_PASSWORD+"@tcp("+DB_Host+")/"+DB_NAME+"?parseTime=true")
 	if err != nil {
 		fmt.Println("Error connecting to database:", err)
 		return nil, err
@@ -57,7 +73,7 @@ func CreateDbTables(Db *sql.DB) error {
 	}()
 
 	// Wait for both tasks to complete
-	var usersErr, walletsErr, otpsErr, transErr  bool
+	var usersErr, walletsErr, otpsErr, transErr bool
 	for i := 0; i < 2; i++ {
 		select {
 		case err := <-usersCreationDone:

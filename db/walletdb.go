@@ -7,7 +7,12 @@ import (
 	model "example.com/fintech-app/models"
 )
 
-func GetWalletByUserId(userId int64) (*model.Wallet, error) {
+type WalletRepository struct{}
+
+var WalletRepo = WalletRepository{}
+
+
+func (w WalletRepository) GetWalletByUserId(userId int64) (*model.Wallet, error) {
 	// get the associated user wallet data..
 	query := `SELECT id, balance, status, userId FROM wallets WHERE userId = ?`
 	stmt, err := DB.Prepare(query)
@@ -34,7 +39,7 @@ func GetWalletByUserId(userId int64) (*model.Wallet, error) {
 	return &userWallet, nil
 }
 
-func CreateNewWallet(userID int64) (*model.Wallet, error) {
+func (w WalletRepository) CreateNewWallet(userID int64) (*model.Wallet, error) {
 	// Prepare the SQL query
 	query := `
         INSERT INTO wallets (balance, userId, status)
@@ -64,7 +69,7 @@ func CreateNewWallet(userID int64) (*model.Wallet, error) {
 	return newWallet, nil
 }
 
-func DeleteWallet(walletId int64) error {
+func (w WalletRepository) DeleteWallet(walletId int64) error {
 	_, err := DB.Exec(`DELETE FROM users WHERE id = ?`, walletId)
 
 	if err != nil {
@@ -74,7 +79,7 @@ func DeleteWallet(walletId int64) error {
 	return nil
 }
 
-func RefundWallet(userID, walledId int64, amount float64) error {
+func (w WalletRepository) RefundWallet(userID, walledId int64, amount float64) error {
 	// Prepare the SQL query to update the wallet balance
 	query := `
         UPDATE wallets 
@@ -112,7 +117,7 @@ func RefundWallet(userID, walledId int64, amount float64) error {
 }
 
 // Withdraw deducts the specified amount from the wallet balance if conditions are met.
-func WithdrawFromWallet(userID, walletId int64, amount float64) error {
+func (w WalletRepository) WithdrawFromWallet(userID, walletId int64, amount float64) error {
 	// Start a transaction
 	tx, err := DB.Begin()
 	if err != nil {

@@ -10,7 +10,11 @@ import (
 	"time"
 )
 
-func CreateNewUser(userData *models.User) (*models.User, error) {
+type UserRepository struct{}
+
+var UserRepo = UserRepository{}
+
+func (u UserRepository) CreateNewUser(userData *models.User) (*models.User, error) {
 	query := `
         INSERT INTO users (name, email, password, phoneNumber)
         VALUES (?, ?, ?, ?)
@@ -42,7 +46,7 @@ func CreateNewUser(userData *models.User) (*models.User, error) {
 	// Set the ID of the user in the userData object
 	userData.ID = userID
 
-	_, err = CreateNewWallet(userID)
+	_, err =  WalletRepo.CreateNewWallet(userID)
 	if err != nil {
 		fmt.Println(err)
 		return nil, fmt.Errorf("error in creating new wallet: %v", err)
@@ -51,7 +55,7 @@ func CreateNewUser(userData *models.User) (*models.User, error) {
 	return userData, nil
 }
 
-func DeleteUser(userId int64) error {
+func (u UserRepository) DeleteUser(userId int64) error {
 
 	DeleteUserQuery := `
 	DELETE FROM users WHERE id = ?
@@ -91,7 +95,7 @@ func DeleteUser(userId int64) error {
 	return nil
 }
 
-func UpdateUserData(userId int64, userData map[string]interface{}) error {
+func (u UserRepository) UpdateUserData(userId int64, userData map[string]interface{}) error {
 	// Prepare the SQL query to update user data
 	query := `
         UPDATE users
@@ -107,7 +111,7 @@ func UpdateUserData(userId int64, userData map[string]interface{}) error {
 
 	defer updateUsersStmt.Close()
 
-	user, err := GetUserById(userId)
+	user, err := u.GetUserById(userId)
 
 	if err != nil {
 		return fmt.Errorf("error updating user data: %v", err)
@@ -160,7 +164,7 @@ func UpdateUserData(userId int64, userData map[string]interface{}) error {
 	return nil
 }
 
-func GetUserById(userId int64) (*models.User, error) {
+func (u UserRepository) GetUserById(userId int64) (*models.User, error) {
 	// Prepare the SQL query to fetch user data
 	query := `
         SELECT * FROM users
@@ -190,7 +194,7 @@ func GetUserById(userId int64) (*models.User, error) {
 	return &user, nil
 }
 
-func Login(w http.ResponseWriter, r *http.Request, email, password string) (string, error) {
+func (u UserRepository) Login(w http.ResponseWriter, r *http.Request, email, password string) (string, error) {
 	// Prepare the SQL query with placeholders for email and password
 	query := `SELECT * FROM users WHERE email = ?`
 	stmt, err := DB.Prepare(query)
@@ -225,7 +229,7 @@ func Login(w http.ResponseWriter, r *http.Request, email, password string) (stri
 
 	// get user wallet 
 
-	userWallet , err := GetWalletByUserId(user.ID)
+	userWallet , err := WalletRepo.GetWalletByUserId(user.ID)
 
 	if err != nil {
 		return "", fmt.Errorf("something went wrong")
@@ -249,7 +253,7 @@ func Login(w http.ResponseWriter, r *http.Request, email, password string) (stri
 
 		// check if the user has an active opt
 
-		userActiveOTP, err := HasActiveOTP(user.ID)
+		userActiveOTP, err := OTPRepo.HasActiveOTP(user.ID)
 
 		if err != nil {
 			return "", fmt.Errorf("something went wrong")
@@ -257,7 +261,7 @@ func Login(w http.ResponseWriter, r *http.Request, email, password string) (stri
 
 		if userActiveOTP == "" {
 			// generate the otp
-			otp, err := GenerateOtp(user.ID, userWallet.ID)
+			otp, err := OTPRepo.GenerateOtp(user.ID, userWallet.ID)
 			if err != nil {
 				return "", fmt.Errorf("something went wrong")
 			}
@@ -291,7 +295,7 @@ func Login(w http.ResponseWriter, r *http.Request, email, password string) (stri
 	return otpStr, nil
 }
 
-func Logout(w http.ResponseWriter) {
+func (u UserRepository) Logout(w http.ResponseWriter) {
 	// Set the MaxAge of the token cookie to a negative value to expire immediately
 	expiredCookie := &http.Cookie{
 		Name:     "id_token",

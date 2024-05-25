@@ -10,7 +10,11 @@ import (
 	"github.com/dchest/uniuri"
 )
 
-func GenerateOtp(userId, walletId int64) (*models.OTPS, error) {
+type OTPRepository struct {}
+
+var OTPRepo = OTPRepository{}
+
+func (OTP OTPRepository) GenerateOtp(userId, walletId int64) (*models.OTPS, error) {
 	// generated otp
 	opt := uniuri.NewLen(6)
 
@@ -44,7 +48,7 @@ func GenerateOtp(userId, walletId int64) (*models.OTPS, error) {
 	return &newOTP, nil
 }
 
-func ValidateOtp(otpStr string, userId, walletId int64) (bool, error) {
+func (OTP OTPRepository) ValidateOtp(otpStr string, userId, walletId int64) (bool, error) {
 	query := `
 	SELECT * FROM otps WHERE userId = ? AND walletId = ?
 	`
@@ -71,7 +75,7 @@ func ValidateOtp(otpStr string, userId, walletId int64) (bool, error) {
 	return isValidOTP, nil
 }
 
-func ValidateOTPAndActivateWallet(userID int64, otp string) error {
+func (OTP OTPRepository) ValidateOTPAndActivateWallet(userID int64, otp string) error {
 	var wg sync.WaitGroup
 
 	// Prepare the SQL query to fetch the wallet status and OTP
@@ -141,7 +145,7 @@ func ValidateOTPAndActivateWallet(userID int64, otp string) error {
 }
 
 // check if the user Has an Active OTP to resend it otherwise create a new one.
-func HasActiveOTP(userID int64) (string, error) {
+func (OTP OTPRepository) HasActiveOTP(userID int64) (string, error) {
     // Prepare the SQL query to fetch the wallet status and OTP
     query := `
         SELECT otp, createdAt, walletId FROM otps AS o 
