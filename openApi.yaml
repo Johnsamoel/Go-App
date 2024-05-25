@@ -55,25 +55,6 @@ paths:
   /api/user/{id}:
     get:
       summary: Get user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the user to retrieve.
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Successful operation
-    delete:
-      summary: Delete user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the user to delete.
-          schema:
-            type: integer
       responses:
         '200':
           description: Successful operation
@@ -124,26 +105,12 @@ paths:
   /api/user/delete/{id}:
     delete:
       summary: Delete user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the user to delete.
-          schema:
-            type: integer
       responses:
         '200':
           description: Successful operation
   /api/user/update/{id}:
     patch:
       summary: Update user
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: ID of the user to update.
-          schema:
-            type: integer
       requestBody:
         required: true
         content:
